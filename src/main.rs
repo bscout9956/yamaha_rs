@@ -19,19 +19,9 @@ struct SoundBankInfo {
 }
 
 fn read_file_as_vec_u8(file_path: &str) -> Vec<u8> {
+    // TODO: Should we propagate the error?
     let data: Vec<u8> =
         read(&file_path).expect(&format!("Failed to read bytes for file in {}", file_path));
-    return data;
-}
-
-fn read_disc_metadata(disc_dir: &str) -> Vec<u8> {
-    // FIXME: Is hardcoded, shouldn't be
-    // FIXME: I am a repeat of read_file_as_vec_u8, abstract me?
-    let metadata_path: String = format!("{}\\F015", disc_dir);
-    let data: Vec<u8> = read(&metadata_path).expect(&format!(
-        "Failed to read bytes for disc metadata in {}",
-        metadata_path
-    ));
     return data;
 }
 
@@ -143,22 +133,36 @@ fn read_soundbank_metadata(directory: &str) -> Vec<SoundBankInfo> {
 
 fn main() {
     let metadata_dir: &str = "V:\\24297D08";
-    let disc_metadata_raw: Vec<u8> = read_disc_metadata(metadata_dir);
-    let bank_metadata_raw: Vec<u8> = read_file_as_vec_u8(&format!("{}\\0000", metadata_dir));
 
-    let disc_name: String = get_disk_name(&disc_metadata_raw);
-    println!("Disc Name: {disc_name}");
+    let bank_metadata_raw: Vec<u8> = read_file_as_vec_u8(&format!("{}\\0000", metadata_dir));
+    let patch_count = bank_metadata_raw.len() / 32;
 
     println!("\n === Patch Data ===\n");
-    let patch_data: Vec<PatchData> = get_all_patch_data(&bank_metadata_raw, 14);
+    let mut patch_data: Vec<PatchData> = get_all_patch_data(&bank_metadata_raw, patch_count);
     for data in &patch_data {
         println!("{:?}", data);
     }
 
-    println!("\n === SoundBank Info ===\n");
+    // The patch_data contains patch_data, but also includes the disc_metadata inside its file as the last entry.
+    // Sometimes the name on that patch isn't set so we actually grab it from its own file. Which can't be dynamically discovered.
+    // e.g: PatchData { index: 15, patch_name: "_DSKNAME\0\0\0\0\0\0\0\0", patch_file_name: "F015" }
+    let disc_metadata: PatchData = patch_data
+        .pop()
+        .expect("Failed to grab disc metadata from patch_data.");
+    
+    let disc_metadata_raw: Vec<u8> = read_file_as_vec_u8(&format!(
+        "{}\\{}",
+        metadata_dir, disc_metadata.patch_file_name
+    ));
+    
+    let disc_name: String = get_disk_name(&disc_metadata_raw);
+    println!("Disc Name from File: {} | Disc Name from Patch_Data: {}", disc_name, disc_metadata.patch_name);
+
     let patch_names = patch_data.iter().map(|p| &p.patch_file_name);
+    
+    println!("\n=== SoundBank Info ===\n");
     for dir_name in patch_names {
-        let base_path = format!("{}\\{}", metadata_dir, dir_name);
+        let base_path: String = format!("{}\\{}", metadata_dir, dir_name);
         read_soundbanks(&format!("{}\\SBNK", base_path));
     }
 }
