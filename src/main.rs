@@ -65,7 +65,6 @@ fn get_all_patch_data(data: &[u8], patch_count: usize) -> Vec<PatchData> {
     let mut i: usize = 0;
     let mut patches: Vec<PatchData> = Vec::new();
 
-    // FIXME: We shouldn't count the last one, as it's just metadata (or garbage?)
     // TODO: Perhaps turn this into a singular function to get the entire PatchData struct as one?
     while i < (patch_count * 2) {
         patches.push(PatchData {
