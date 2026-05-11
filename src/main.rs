@@ -50,7 +50,7 @@ fn get_patch_data(data: &[u8], index: usize) -> PatchData {
                 .to_string()
         },
         patch_file_name: {
-            data[end+1..end+5]
+            data[end + 1..end + 5]
                 .iter()
                 .map(|&byte| byte as char)
                 .collect::<String>()
@@ -145,23 +145,22 @@ fn main() {
         .pop()
         .expect("Failed to grab disc metadata from patch_data.");
 
-    let disc_metadata_raw: Vec<u8> = read_file_as_vec_u8(&format!(
-        "{}\\{}",
-        disc_dir, disc_metadata.patch_file_name
-    ));
+    let disc_metadata_raw: Vec<u8> =
+        read_file_as_vec_u8(&format!("{disc_dir}\\{}", disc_metadata.patch_file_name));
 
     let disc_name: String = get_disk_name(&disc_metadata_raw);
     println!(
-        "Disc Name from File: {} | Disc Name from Patch_Data: {}",
-        disc_name, disc_metadata.patch_name
+        "Disc Name from File: {disc_name} | Disc Name from Patch_Data: {}",
+        disc_metadata.patch_name
     );
 
     let patch_names = patch_data.iter().map(|p| &p.patch_file_name);
 
     println!("\n=== SoundBank Info ===\n");
     for soundbank_name in patch_names {
-        let base_path: String = format!("{}\\{}", disc_dir, soundbank_name);
-        println!("\n===Reading SoundBank: {soundbank_name} ===\n");
-        read_soundbanks(&format!("{}\\SBNK", base_path));
+        let base_path: String = format!("{disc_dir}\\{soundbank_name}");
+        let soundbank_path: String = format!("{base_path}\\SBNK");
+        println!("\n===Reading SoundBank {soundbank_name} at {soundbank_path} ===\n");
+        read_soundbanks(&soundbank_path);
     }
 }
