@@ -4,6 +4,7 @@ use std::fs::read;
 
 // TODO: Separate structs where applicable
 
+#[allow(dead_code)]
 #[derive(Debug)]
 struct PatchData {
     index: usize,
@@ -11,6 +12,7 @@ struct PatchData {
     patch_file_name: String,
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 struct SoundBankInfo {
     index: usize,
