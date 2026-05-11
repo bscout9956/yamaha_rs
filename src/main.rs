@@ -127,9 +127,9 @@ fn read_soundbank_metadata(directory: &str) -> Vec<SoundBankInfo> {
 }
 
 fn main() {
-    let metadata_dir: &str = "V:\\24297D08";
+    let disc_dir: &str = "V:\\24297D08";
 
-    let bank_metadata_raw: Vec<u8> = read_file_as_vec_u8(&format!("{}\\0000", metadata_dir));
+    let bank_metadata_raw: Vec<u8> = read_file_as_vec_u8(&format!("{}\\0000", disc_dir));
     let patch_count = bank_metadata_raw.len() / 32;
 
     println!("\n === Patch Data ===\n");
@@ -147,7 +147,7 @@ fn main() {
 
     let disc_metadata_raw: Vec<u8> = read_file_as_vec_u8(&format!(
         "{}\\{}",
-        metadata_dir, disc_metadata.patch_file_name
+        disc_dir, disc_metadata.patch_file_name
     ));
 
     let disc_name: String = get_disk_name(&disc_metadata_raw);
@@ -159,8 +159,9 @@ fn main() {
     let patch_names = patch_data.iter().map(|p| &p.patch_file_name);
 
     println!("\n=== SoundBank Info ===\n");
-    for dir_name in patch_names {
-        let base_path: String = format!("{}\\{}", metadata_dir, dir_name);
+    for soundbank_name in patch_names {
+        let base_path: String = format!("{}\\{}", disc_dir, soundbank_name);
+        println!("\n===Reading SoundBank: {soundbank_name} ===\n");
         read_soundbanks(&format!("{}\\SBNK", base_path));
     }
 }
