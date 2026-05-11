@@ -38,6 +38,15 @@ struct SoundBankInfo {
     preset_file_name: String,
 }
 
+impl SoundBankInfo {
+    pub fn to_sound_bank(self) -> SoundBank {
+        return SoundBank {
+            preset_name: self.preset_name,
+            preset_file_name: self.preset_file_name
+        }
+    }
+}
+
 fn read_file_as_vec_u8(file_path: &str) -> Vec<u8> {
     // TODO: Should we propagate the error?
     let data: Vec<u8> =
