@@ -127,6 +127,7 @@ fn get_soundbank_info(data: &[u8], index: usize) -> SoundBankInfo {
     };
 }
 
+// Reads the soundbank metadata from the listing file, SoundBankInfo does not contain its final data (if there is one, idk yet)
 fn read_soundbank_metadata(directory: &str) -> Vec<SoundBankInfo> {
     let mut soundbank_info: Vec<SoundBankInfo> = Vec::new();
     println!("Reading from {directory}");
