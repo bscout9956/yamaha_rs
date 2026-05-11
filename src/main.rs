@@ -3,7 +3,7 @@
 use std::{
     fs::{self},
     path::Path,
-    path::PathBuf
+    path::PathBuf,
 };
 
 #[derive(Debug)]
@@ -15,8 +15,8 @@ struct SoundBank {
 #[derive(Debug)]
 struct SoundBankEntry {
     // other data should be here but there's no documentation lmao?
-    sample_name: String,       //x32 to x41
-    left_channel_name: String, // x78 to x87
+    sample_name: String,        //x32 to x41
+    left_channel_name: String,  // x78 to x87
     right_channel_name: String, // x88 to x97
 }
 
@@ -44,7 +44,10 @@ impl PatchData {
     }
 
     fn load_soundbanks(&mut self, base_path: &Path) {
-        let sbnk_path: PathBuf = base_path.join(&self.patch_file_name).join("SBNK").join("0000");
+        let sbnk_path: PathBuf = base_path
+            .join(&self.patch_file_name)
+            .join("SBNK")
+            .join("0000");
         let sbnk_data: Vec<u8> = fs::read(sbnk_path).expect("Failed to read sbnk data");
         self.sound_banks = sbnk_data
             .chunks_exact(32)
@@ -55,7 +58,6 @@ impl PatchData {
             .collect();
     }
 }
-
 
 fn main() {
     let disc_dir: &Path = Path::new("V:\\24297D08");
@@ -77,9 +79,9 @@ fn main() {
         .pop()
         .expect("Failed to grab disc metadata from patch_data.");
 
-    let disc_metadata_contents = fs::read(disc_dir.join(disc_metadata.patch_file_name)).expect("Failed to read disc metadata content");
+    let disc_metadata_contents = fs::read(disc_dir.join(disc_metadata.patch_file_name))
+        .expect("Failed to read disc metadata content");
     let disc_name = bytes_to_str(&disc_metadata_contents[0..16]);
-
 
     for patch in &mut patch_data {
         patch.load_soundbanks(disc_dir);
