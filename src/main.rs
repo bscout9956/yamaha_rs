@@ -24,7 +24,7 @@ struct SoundBank {
 
 #[allow(dead_code)]
 #[derive(Debug)]
-struct PatchData {
+struct PatchDataInfo {
     index: usize,
     patch_name: String,
     patch_file_name: String,
@@ -64,10 +64,10 @@ fn get_disk_name(data: &[u8]) -> String {
     return disk_name;
 }
 
-fn get_patch_data(data: &[u8], index: usize) -> PatchData {
+fn get_patch_data(data: &[u8], index: usize) -> PatchDataInfo {
     let start: usize = (index * 16) + 1;
     let end: usize = start + 16;
-    PatchData {
+    PatchDataInfo {
         index: index,
         patch_name: {
             data[start..end]
@@ -86,9 +86,9 @@ fn get_patch_data(data: &[u8], index: usize) -> PatchData {
     }
 }
 
-fn get_all_patch_data(data: &[u8], patch_count: usize) -> Vec<PatchData> {
+fn get_all_patch_data(data: &[u8], patch_count: usize) -> Vec<PatchDataInfo> {
     let mut i: usize = 0;
-    let mut patches: Vec<PatchData> = Vec::new();
+    let mut patches: Vec<PatchDataInfo> = Vec::new();
 
     // TODO: Perhaps turn this into a singular function to get the entire PatchData struct as one?
     while i < (patch_count * 2) {
@@ -160,15 +160,13 @@ fn main() {
     let patch_count = bank_metadata_raw.len() / 32;
 
     println!("\n === Patch Data ===\n");
-    let mut patch_data: Vec<PatchData> = get_all_patch_data(&bank_metadata_raw, patch_count);
-    for data in &patch_data {
-        println!("{:?}", data);
-    }
+    let mut patch_data: Vec<PatchDataInfo> = get_all_patch_data(&bank_metadata_raw, patch_count);
+    let mut full_patch_data: Vec<PatchData> = Vec::new();
 
     // The patch_data contains patch_data, but also includes the disc_metadata inside its file as the last entry.
     // Sometimes the name on that patch isn't set so we actually grab it from its own file. Which can't be dynamically discovered.
     // e.g: PatchData { index: 15, patch_name: "_DSKNAME\0\0\0\0\0\0\0\0", patch_file_name: "F015" }
-    let disc_metadata: PatchData = patch_data
+    let disc_metadata: PatchDataInfo = patch_data
         .pop()
         .expect("Failed to grab disc metadata from patch_data.");
 
