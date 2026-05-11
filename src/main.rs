@@ -4,6 +4,24 @@ use std::fs::read;
 
 // TODO: Separate structs where applicable
 
+#[derive(Debug)]
+struct YamahaDiscData {
+    patch_data: PatchDataInfo,
+}
+
+#[derive(Debug)]
+struct PatchData {
+    patch_name: String,
+    patch_file_name: String,
+    sound_banks: Vec<SoundBank>,
+}
+
+#[derive(Debug)]
+struct SoundBank {
+    preset_name: String,
+    preset_file_name: String,
+}
+
 #[allow(dead_code)]
 #[derive(Debug)]
 struct PatchData {
