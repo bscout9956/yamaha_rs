@@ -99,13 +99,6 @@ fn get_all_patch_data(data: &[u8], patch_count: usize) -> Vec<PatchDataInfo> {
     return patches;
 }
 
-fn read_soundbanks(directory: &str) {
-    let metadata: Vec<SoundBankInfo> = read_soundbank_metadata(&directory);
-    for bank in metadata {
-        println!("{:?}", bank);
-    }
-}
-
 fn get_soundbank_info(data: &[u8], index: usize) -> SoundBankInfo {
     let start_name: usize = (index * 16) + 1;
     let end_name: usize = start_name + 16;
@@ -131,7 +124,7 @@ fn get_soundbank_info(data: &[u8], index: usize) -> SoundBankInfo {
         .to_string();
 
     return SoundBankInfo {
-        index: index,
+        index: index/2,
         preset_name: bank_name,
         preset_file_name: bank_file_name,
     };
@@ -139,6 +132,7 @@ fn get_soundbank_info(data: &[u8], index: usize) -> SoundBankInfo {
 
 fn read_soundbank_metadata(directory: &str) -> Vec<SoundBankInfo> {
     let mut soundbank_info: Vec<SoundBankInfo> = Vec::new();
+    println!("Reading from {directory}");
     let raw_soundbank_info: Vec<u8> = read_file_as_vec_u8(&format!("{}\\0000", directory));
 
     let mut i: usize = 0;
@@ -179,13 +173,16 @@ fn main() {
         disc_metadata.patch_name
     );
 
-    let patch_names = patch_data.iter().map(|p| &p.patch_file_name);
+    for data in &patch_data {
+        let sound_bank_info: Vec<SoundBankInfo> = read_soundbank_metadata(&format!("{disc_dir}\\{}\\SBNK", data.patch_file_name));
+        let sound_banks: Vec<SoundBank> = sound_bank_info.into_iter().map(|sbi| sbi.to_sound_bank()).collect();
 
-    println!("\n=== SoundBank Info ===\n");
-    for soundbank_name in patch_names {
-        let base_path: String = format!("{disc_dir}\\{soundbank_name}");
-        let soundbank_path: String = format!("{base_path}\\SBNK");
-        println!("\n===Reading SoundBank {soundbank_name} at {soundbank_path} ===\n");
-        read_soundbanks(&soundbank_path);
+        full_patch_data.push(PatchData {
+            patch_name: data.patch_name.clone(),
+            patch_file_name: data.patch_file_name.clone(),
+            sound_banks: sound_banks,
+        });
+
+        println!("{:#?}", full_patch_data);
     }
 }
