@@ -47,6 +47,8 @@ impl SoundBankInfo {
     }
 }
 
+
+// Reads any binary file as a Vector of u8s, given a file_path
 fn read_file_as_vec_u8(file_path: &str) -> Vec<u8> {
     // TODO: Should we propagate the error?
     let data: Vec<u8> =
@@ -54,6 +56,7 @@ fn read_file_as_vec_u8(file_path: &str) -> Vec<u8> {
     return data;
 }
 
+// Gets the disk name from the data
 fn get_disk_name(data: &[u8]) -> String {
     let disk_name: String = data[0..16]
         .iter()
@@ -64,6 +67,7 @@ fn get_disk_name(data: &[u8]) -> String {
     return disk_name;
 }
 
+// Returns a singular PatchDataInfo from the raw data at a given index
 fn get_patch_data(data: &[u8], index: usize) -> PatchDataInfo {
     let start: usize = (index * 16) + 1;
     let end: usize = start + 16;
@@ -86,6 +90,7 @@ fn get_patch_data(data: &[u8], index: usize) -> PatchDataInfo {
     }
 }
 
+// Returns a Vector of PatchDataInfo, these do not contain SoundBanks inside
 fn get_all_patch_data(data: &[u8], patch_count: usize) -> Vec<PatchDataInfo> {
     let mut i: usize = 0;
     let mut patches: Vec<PatchDataInfo> = Vec::new();
@@ -99,17 +104,10 @@ fn get_all_patch_data(data: &[u8], patch_count: usize) -> Vec<PatchDataInfo> {
     return patches;
 }
 
+// Returns SoundBankInfo containing Bank Name, Bank File Name (F???) and Index
 fn get_soundbank_info(data: &[u8], index: usize) -> SoundBankInfo {
     let start_name: usize = (index * 16) + 1;
     let end_name: usize = start_name + 16;
-
-    if end_name > data.len() {
-        panic!(
-            "Ending index {} greater than data length {}!",
-            end_name,
-            data.len()
-        );
-    }
 
     let bank_name: String = data[start_name..end_name]
         .iter()
