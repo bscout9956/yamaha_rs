@@ -37,28 +37,26 @@ fn get_disk_name(data: &[u8]) -> String {
     return disk_name;
 }
 
-fn get_patch_name(data: &[u8], index: usize) -> String {
+fn get_patch_data(data: &[u8], index: usize) -> PatchData {
     let start: usize = (index * 16) + 1;
-    let end: usize = start + 16; // always 16 bytes
-    let patch_name: String = data[start..end]
-        .iter()
-        .map(|&byte| byte as char)
-        .collect::<String>()
-        .to_string();
-
-    return patch_name;
-}
-
-fn get_patch_file_name(data: &[u8], index: usize) -> String {
-    let start: usize = (index * 16) + 18;
-    let end: usize = start + 4; // always 4 bytes
-    let patch_fname: String = data[start..end]
-        .iter()
-        .map(|&byte| byte as char)
-        .collect::<String>()
-        .to_string();
-
-    return patch_fname;
+    let end: usize = start + 16;
+    PatchData {
+        index: index,
+        patch_name: {
+            data[start..end]
+                .iter()
+                .map(|&byte| byte as char)
+                .collect::<String>()
+                .to_string()
+        },
+        patch_file_name: {
+            data[end+1..end+5]
+                .iter()
+                .map(|&byte| byte as char)
+                .collect::<String>()
+                .to_string()
+        },
+    }
 }
 
 fn get_all_patch_data(data: &[u8], patch_count: usize) -> Vec<PatchData> {
@@ -67,11 +65,7 @@ fn get_all_patch_data(data: &[u8], patch_count: usize) -> Vec<PatchData> {
 
     // TODO: Perhaps turn this into a singular function to get the entire PatchData struct as one?
     while i < (patch_count * 2) {
-        patches.push(PatchData {
-            index: (i / 2) + 1,
-            patch_name: get_patch_name(&data, i),
-            patch_file_name: get_patch_file_name(&data, i),
-        });
+        patches.push(get_patch_data(data, i));
         i += 2;
     }
 
@@ -150,17 +144,20 @@ fn main() {
     let disc_metadata: PatchData = patch_data
         .pop()
         .expect("Failed to grab disc metadata from patch_data.");
-    
+
     let disc_metadata_raw: Vec<u8> = read_file_as_vec_u8(&format!(
         "{}\\{}",
         metadata_dir, disc_metadata.patch_file_name
     ));
-    
+
     let disc_name: String = get_disk_name(&disc_metadata_raw);
-    println!("Disc Name from File: {} | Disc Name from Patch_Data: {}", disc_name, disc_metadata.patch_name);
+    println!(
+        "Disc Name from File: {} | Disc Name from Patch_Data: {}",
+        disc_name, disc_metadata.patch_name
+    );
 
     let patch_names = patch_data.iter().map(|p| &p.patch_file_name);
-    
+
     println!("\n=== SoundBank Info ===\n");
     for dir_name in patch_names {
         let base_path: String = format!("{}\\{}", metadata_dir, dir_name);
