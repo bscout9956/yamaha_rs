@@ -19,13 +19,8 @@ struct SoundBankInfo {
 }
 
 fn read_file_as_vec_u8(file_path: &str) -> Vec<u8> {
-    let data: Vec<u8> = read(&file_path).expect(
-        format!(
-            "Failed to read bytes for file in {}",
-            file_path
-        )
-        .as_str(),
-    );
+    let data: Vec<u8> =
+        read(&file_path).expect(&format!("Failed to read bytes for file in {}", file_path));
     return data;
 }
 
@@ -33,13 +28,10 @@ fn read_disc_metadata(disc_dir: &str) -> Vec<u8> {
     // FIXME: Is hardcoded, shouldn't be
     // FIXME: I am a repeat of read_file_as_vec_u8, abstract me?
     let metadata_path: String = format!("{}\\F015", disc_dir);
-    let data: Vec<u8> = read(&metadata_path).expect(
-        format!(
-            "Failed to read bytes for disc metadata in {}",
-            metadata_path
-        )
-        .as_str(),
-    );
+    let data: Vec<u8> = read(&metadata_path).expect(&format!(
+        "Failed to read bytes for disc metadata in {}",
+        metadata_path
+    ));
     return data;
 }
 
@@ -135,7 +127,7 @@ fn get_soundbank_info(data: &[u8], index: usize) -> SoundBankInfo {
 
 fn read_soundbank_metadata(directory: &str) -> Vec<SoundBankInfo> {
     let mut soundbank_info: Vec<SoundBankInfo> = Vec::new();
-    let raw_soundbank_info: Vec<u8> = read_file_as_vec_u8(format!("{}\\0000", directory).as_str());
+    let raw_soundbank_info: Vec<u8> = read_file_as_vec_u8(&format!("{}\\0000", directory));
 
     let mut i: usize = 0;
     // Length of file / block_size
@@ -152,7 +144,7 @@ fn read_soundbank_metadata(directory: &str) -> Vec<SoundBankInfo> {
 fn main() {
     let metadata_dir: &str = "V:\\24297D08";
     let disc_metadata_raw: Vec<u8> = read_disc_metadata(metadata_dir);
-    let bank_metadata_raw: Vec<u8> = read_file_as_vec_u8(format!("{}\\0000", metadata_dir).as_str());
+    let bank_metadata_raw: Vec<u8> = read_file_as_vec_u8(&format!("{}\\0000", metadata_dir));
 
     let disc_name: String = get_disk_name(&disc_metadata_raw);
     println!("Disc Name: {disc_name}");
