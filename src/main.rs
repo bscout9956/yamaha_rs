@@ -10,10 +10,11 @@ use std::{
 struct SoundBank {
     preset_name: String,
     preset_file_name: String,
+    sample: Option<Sample>,
 }
 
 #[derive(Debug)]
-struct SoundBankEntry {
+struct Sample {
     // other data should be here but there's no documentation lmao?
     sample_name: String,        //x32 to x41
     left_channel_name: String,  // x78 to x87
@@ -54,6 +55,7 @@ impl PatchData {
             .map(|chunk| SoundBank {
                 preset_file_name: bytes_to_str(&chunk[1..16]),
                 preset_name: bytes_to_str(&chunk[18..22]),
+                sample: None
             })
             .collect();
     }
