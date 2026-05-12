@@ -60,8 +60,8 @@ fn bytes_to_str(bytes: &[u8]) -> String {
 
 impl PatchData {
     fn from_data(data: &[u8]) -> Self {
-        let name = bytes_to_str(&data[1..16]);
-        let file_name = bytes_to_str(&data[18..22]);
+        let name: String = bytes_to_str(&data[1..16]);
+        let file_name: String = bytes_to_str(&data[18..22]);
 
         PatchData {
             patch_name: name,
@@ -75,7 +75,9 @@ impl PatchData {
             .join(&self.patch_file_name)
             .join("SBNK")
             .join("0000");
+        
         let sbnk_data: Vec<u8> = fs::read(sbnk_path).expect("Failed to read sbnk data");
+        
         self.sound_banks = sbnk_data
             .chunks_exact(32)
             .map(|chunk| SoundBank {
