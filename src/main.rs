@@ -18,12 +18,12 @@ impl SoundBank {
     fn load_sample_params(&mut self, base_path: &PathBuf) {
         let sample_path: PathBuf = base_path.join("SBNK").join(&self.preset_file_name);
         
-        let sample_data = fs::read(&sample_path).expect(&format!(
+        let sample_data: Vec<u8> = fs::read(&sample_path).expect(&format!(
             "Failed to read sample data at {}",
             sample_path.to_string_lossy()
         ));
 
-        let right_channel_name_data = &sample_data[0x88..0x97];
+        let right_channel_name_data: &[u8] = &sample_data[0x88..0x97];
         // If all characters are \0, that means it's all empty, thus it's Mono (not Stereo)
         let is_stereo = !right_channel_name_data.iter().all(|&f| f as char == '\0');
 
@@ -91,9 +91,9 @@ impl PatchData {
 
 fn main() {
     let disc_dir: &Path = Path::new("V:\\24297D08");
-    let index_path = disc_dir.join("0000");
+    let index_path: PathBuf = disc_dir.join("0000");
 
-    let index_file = fs::read(index_path).expect("Failed to read index_file");
+    let index_file: Vec<u8> = fs::read(index_path).expect("Failed to read index_file");
 
     let mut patch_data: Vec<PatchData> = index_file
         .chunks_exact(32)
