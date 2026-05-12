@@ -50,7 +50,15 @@ fn main() {
         for sbnk in &mut patch.sound_banks {
             sbnk.load_sample_params(&disc_dir.join(&patch.patch_file_name));
         }
+        for wavf in &mut patch.sample_data {
+            wavf.load_waveform(&disc_dir.join(&patch.patch_file_name));
+        }
     }
 
-    println!("{:#?}", patch_data);
+    for patch in &mut patch_data {
+        for wavf in &mut patch.sample_data {
+            wavf.save_waveform_as_wav(&disc_dir.join(&patch.patch_file_name))
+                .expect("Error saving waveform");
+        }
+    }
 }
