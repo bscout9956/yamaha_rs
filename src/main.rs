@@ -122,5 +122,11 @@ fn main() {
         disc_metadata.patch_name
     );
 
+    for patch in &mut patch_data {
+        for sbnk in &mut patch.sound_banks {
+            sbnk.load_sample_params(&disc_dir.join(&patch.patch_file_name));
+        }
+    }
+
     println!("{:#?}", patch_data);
 }
