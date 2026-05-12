@@ -81,9 +81,9 @@ impl PatchData {
         self.sound_banks = sbnk_data
             .chunks_exact(32)
             .map(|chunk| SoundBank {
-                preset_file_name: bytes_to_str(&chunk[1..16]),
-                preset_name: bytes_to_str(&chunk[18..22]),
-                sample: None
+                preset_name: bytes_to_str(&chunk[1..16]),
+                preset_file_name: bytes_to_str(&chunk[18..22]),
+                sample: None,
             })
             .collect();
     }
