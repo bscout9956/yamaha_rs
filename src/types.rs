@@ -3,7 +3,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use crate::utils::{ByteUtils};
+use crate::utils::ByteUtils;
 
 #[allow(dead_code)]
 #[derive(Debug)]

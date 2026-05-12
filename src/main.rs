@@ -9,7 +9,7 @@ use std::{
     path::PathBuf,
 };
 
-use crate::{types::PatchData, utils::bytes_to_str};
+use crate::{types::PatchData, utils::ByteUtils};
 
 
 fn main() {
@@ -32,7 +32,7 @@ fn main() {
         .pop()
         .expect("Failed to grab disc metadata from patch_data.");
 
-    let disc_metadata_contents = fs::read(disc_dir.join(disc_metadata.patch_file_name))
+    let disc_metadata_contents: Vec<u8> = fs::read(disc_dir.join(disc_metadata.patch_file_name))
         .expect("Failed to read disc metadata content");
     let disc_name: &String = &disc_metadata_contents[0..16].to_lossy_string();
 
