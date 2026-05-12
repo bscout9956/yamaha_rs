@@ -1,6 +1,9 @@
-use std::{fs, path::{Path, PathBuf}};
+use std::{
+    fs,
+    path::{Path, PathBuf},
+};
 
-use crate::utils::bytes_to_str;
+use crate::utils::{ByteUtils};
 
 #[allow(dead_code)]
 #[derive(Debug)]
@@ -13,7 +16,7 @@ pub struct SoundBank {
 impl SoundBank {
     pub fn load_sample_params(&mut self, base_path: &PathBuf) {
         let sample_path: PathBuf = base_path.join("SBNK").join(&self.preset_file_name);
-        
+
         let sample_data: Vec<u8> = fs::read(&sample_path).expect(&format!(
             "Failed to read sample data at {}",
             sample_path.to_string_lossy()
@@ -21,13 +24,17 @@ impl SoundBank {
 
         let right_channel_name_data: &[u8] = &sample_data[0x88..0x97];
         // If all characters are \0, that means it's all empty, thus it's Mono (not Stereo)
-        let is_stereo = !right_channel_name_data.iter().all(|&f| f as char == '\0');
+        let is_stereo: bool = !right_channel_name_data.iter().all(|&f| f as char == '\0');
 
         self.sample = Some(Sample {
-            sample_name : bytes_to_str(&sample_data[0x32..0x41]),
-            left_channel_name : bytes_to_str(&sample_data[0x78..0x87]),
+            sample_name: sample_data[0x32..0x41].to_lossy_string(),
+            left_channel_name: sample_data[0x78..0x87].to_lossy_string(),
             // Use empty string if it's stereo, let's not waste memory
-            right_channel_name : if is_stereo { bytes_to_str(right_channel_name_data)} else { String::new() },
+            right_channel_name: if is_stereo {
+                right_channel_name_data.to_lossy_string()
+            } else {
+                String::new()
+            },
             stereo: is_stereo,
         })
     }
@@ -52,8 +59,8 @@ pub struct PatchData {
 
 impl PatchData {
     pub fn from_data(data: &[u8]) -> Self {
-        let name: String = bytes_to_str(&data[1..16]);
-        let file_name: String = bytes_to_str(&data[18..22]);
+        let name: String = data[1..16].to_lossy_string();
+        let file_name: String = data[18..22].to_lossy_string();
 
         PatchData {
             patch_name: name,
@@ -67,14 +74,14 @@ impl PatchData {
             .join(&self.patch_file_name)
             .join("SBNK")
             .join("0000");
-        
+
         let sbnk_data: Vec<u8> = fs::read(sbnk_path).expect("Failed to read sbnk data");
-        
+
         self.sound_banks = sbnk_data
             .chunks_exact(32)
             .map(|chunk| SoundBank {
-                preset_name: bytes_to_str(&chunk[1..16]),
-                preset_file_name: bytes_to_str(&chunk[18..22]),
+                preset_name: chunk[1..16].to_lossy_string(),
+                preset_file_name: chunk[18..22].to_lossy_string(),
                 sample: None,
             })
             .collect();

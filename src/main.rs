@@ -34,7 +34,7 @@ fn main() {
 
     let disc_metadata_contents = fs::read(disc_dir.join(disc_metadata.patch_file_name))
         .expect("Failed to read disc metadata content");
-    let disc_name = bytes_to_str(&disc_metadata_contents[0..16]);
+    let disc_name: &String = &disc_metadata_contents[0..16].to_lossy_string();
 
     for patch in &mut patch_data {
         patch.load_soundbanks(disc_dir);
