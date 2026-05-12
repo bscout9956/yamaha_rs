@@ -44,6 +44,7 @@ struct Sample {
     sample_name: String,        //x32 to x41
     left_channel_name: String,  // x78 to x87
     right_channel_name: String, // x88 to x97
+    stereo: bool,
 }
 
 #[derive(Debug)]
