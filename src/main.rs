@@ -14,6 +14,29 @@ struct SoundBank {
     sample: Option<Sample>,
 }
 
+impl SoundBank {
+    fn load_sample_params(&mut self, base_path: &PathBuf) {
+        let sample_path: PathBuf = base_path.join("SBNK").join(&self.preset_file_name);
+        
+        let sample_data = fs::read(&sample_path).expect(&format!(
+            "Failed to read sample data at {}",
+            sample_path.to_string_lossy()
+        ));
+
+        let right_channel_name_data = &sample_data[0x88..0x97];
+        // If all characters are \0, that means it's all empty, thus it's Mono (not Stereo)
+        let is_stereo = !right_channel_name_data.iter().all(|&f| f as char == '\0');
+
+        self.sample = Some(Sample {
+            sample_name : bytes_to_str(&sample_data[0x32..0x41]),
+            left_channel_name : bytes_to_str(&sample_data[0x78..0x87]),
+            // Use empty string if it's stereo, let's not waste memory
+            right_channel_name : if is_stereo { bytes_to_str(right_channel_name_data)} else { String::new() },
+            stereo: is_stereo,
+        })
+    }
+}
+
 #[allow(dead_code)]
 #[derive(Debug)]
 struct Sample {
