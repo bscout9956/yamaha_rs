@@ -38,6 +38,7 @@ fn main() {
 
     for patch in &mut patch_data {
         patch.load_soundbanks(disc_dir);
+        patch.load_smpl_metadata(disc_dir);
     }
 
     println!(
