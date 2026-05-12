@@ -163,7 +163,6 @@ impl Sample {
     
     pub fn save_waveform_as_wav(&self, base_path: &PathBuf) -> Result<(), WaversError> {
         let final_wav_path: PathBuf = base_path.join("SMPL").join(&self.waveform_file_name).with_added_extension("wav");
-        println!("Using path: {}", final_wav_path.to_string_lossy());
 
         if self.waveform.is_some() {
             let waveform: &WaveForm = self.waveform.as_ref().unwrap();
