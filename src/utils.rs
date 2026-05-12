@@ -1,4 +1,9 @@
-// This should be a impl for u8... Bruh
-pub fn bytes_to_str(bytes: &[u8]) -> String {
-    String::from_utf8_lossy(bytes).to_string()
+pub trait ByteUtils {
+    fn to_lossy_string(&self) -> String;
+}
+
+impl ByteUtils for [u8] {
+    fn to_lossy_string(&self) -> String {
+        String::from_utf8_lossy(self).into_owned()
+    }
 }
