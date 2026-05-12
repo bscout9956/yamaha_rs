@@ -6,6 +6,7 @@ use std::{
     path::PathBuf,
 };
 
+#[allow(dead_code)]
 #[derive(Debug)]
 struct SoundBank {
     preset_name: String,
@@ -13,6 +14,7 @@ struct SoundBank {
     sample: Option<Sample>,
 }
 
+#[allow(dead_code)]
 #[derive(Debug)]
 struct Sample {
     // other data should be here but there's no documentation lmao?
