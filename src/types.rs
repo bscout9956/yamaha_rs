@@ -115,14 +115,14 @@ pub struct WaveForm {
     // ALL DATA IS BIG ENDIAN!
     pub parameters: Vec<u8>, // they go from 0x00 to 0x1FF
     pub sample_rate: u16,    // 0x28 to 0x29, two bytes, samples/sec
-    pub raw_waveform_data: Vec<u16>, // starts at 0x200, goes until the end of the file, should be unsigned 16bit
+    pub raw_waveform_data: Vec<i16>, // starts at 0x200, goes until the end of the file, should be signed 16bit
 }
 
 impl WaveForm {
     pub fn return_waveform_as_f32(&self) -> Vec<f32> {
         self.raw_waveform_data
             .iter()
-            .map(|&sample| (sample as f32 - 32768.0) / 32768.0)
+            .map(|&sample| sample as f32 / 32768.0)
             .collect()
     }
 }
@@ -145,11 +145,11 @@ impl Sample {
 
         let samples = waveform_data[0x200..]
             .chunks_exact(2)
-            .map(|chunk| u16::from_be_bytes([chunk[0], chunk[1]]))
-            .collect::<Vec<u16>>();
+            .map(|chunk| i16::from_be_bytes([chunk[0], chunk[1]]))
+            .collect::<Vec<i16>>();
 
         self.waveform = Some(WaveForm {
-            parameters: waveform_data[0x00..0x1FE].to_vec(),
+            parameters: waveform_data[0x00..0x200].to_vec(),
             sample_rate: waveform_data[0x28..0x2A].from_be_to_u16(),
             raw_waveform_data: samples,
         });
