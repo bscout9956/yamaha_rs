@@ -115,8 +115,8 @@ impl PatchData {
 #[derive(Debug)]
 pub struct WaveForm {
     // ALL DATA IS BIG ENDIAN!
-    pub parameters: Vec<u8>, // they go from 0x00 to 0x1FF
-    pub sample_rate: u16,    // 0x28 to 0x29, two bytes, samples/sec
+    pub parameters: Vec<u8>,         // they go from 0x00 to 0x1FF
+    pub sample_rate: u16,            // 0x28 to 0x29, two bytes, samples/sec
     pub raw_waveform_data: Vec<i16>, // starts at 0x200, goes until the end of the file, should be signed 16bit
 }
 
@@ -154,7 +154,7 @@ impl Sample {
 
         self.waveform = Some(WaveForm {
             parameters: waveform_data[0x00..0x200].to_vec(),
-            sample_rate: waveform_data[0x28..0x2A].from_be_to_u16(),
+            sample_rate: waveform_data[0x28..0x2A].to_u16(),
             raw_waveform_data: samples,
         });
 
@@ -171,11 +171,11 @@ impl Sample {
             .join(&self.waveform_file_name)
             .with_added_extension("wav");
 
-        if self.waveform.is_some() {
-            let waveform: &WaveForm = self.waveform.as_ref().unwrap();
+        if let Some(waveform) = &self.waveform {
             let waveform_f32: Vec<f32> = waveform.return_waveform_as_f32();
 
-            let (samples, sample_rate): (Samples<f32>,i32) = (waveform_f32.into(), waveform.sample_rate.into());
+            let (samples, sample_rate): (Samples<f32>, i32) =
+                (waveform_f32.into(), waveform.sample_rate.into());
             let n_channels = 1;
 
             println!("Writing audio to {}", final_wav_path.to_string_lossy());
