@@ -5,3 +5,6 @@ edition = "2024"
 
 [dependencies]
 wavers = "1.5.1"
+
+[lints.clippy]
+pedantic = "warn"
