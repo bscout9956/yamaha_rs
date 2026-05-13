@@ -16,7 +16,7 @@ pub struct SoundBank {
 }
 
 impl SoundBank {
-    pub fn load_sample_params(&mut self, base_path: &PathBuf) {
+    pub fn load_sample_params(&mut self, base_path: &Path) {
         let sample_path: PathBuf = base_path.join("SBNK").join(&self.preset_file_name);
 
         let sample_data: Vec<u8> = fs::read(&sample_path).unwrap_or_else(|_| {
@@ -137,7 +137,7 @@ pub struct Sample {
 }
 
 impl Sample {
-    pub fn load_waveform(&mut self, base_path: &PathBuf) {
+    pub fn load_waveform(&mut self, base_path: &Path) {
         let waveform_path: PathBuf = base_path.join("SMPL").join(&self.waveform_file_name);
 
         let waveform_data: Vec<u8> = fs::read(&waveform_path).unwrap_or_else(|_| {
@@ -164,9 +164,12 @@ impl Sample {
             self.waveform.as_ref().unwrap().sample_rate
         );
     }
-    
-    pub fn save_waveform_as_wav(&self, base_path: &PathBuf) -> Result<(), WaversError> {
-        let final_wav_path: PathBuf = base_path.join("SMPL").join(&self.waveform_file_name).with_added_extension("wav");
+
+    pub fn save_waveform_as_wav(&self, base_path: &Path) -> Result<(), WaversError> {
+        let final_wav_path: PathBuf = base_path
+            .join("SMPL")
+            .join(&self.waveform_file_name)
+            .with_added_extension("wav");
 
         if self.waveform.is_some() {
             let waveform: &WaveForm = self.waveform.as_ref().unwrap();
