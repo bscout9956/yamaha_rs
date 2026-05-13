@@ -165,6 +165,9 @@ impl Sample {
         );
     }
 
+    /// # Errors
+    /// 
+    /// Will return `WaversError` if Wavers fail to write the wav file.
     pub fn save_waveform_as_wav(&self, base_path: &Path) -> Result<(), WaversError> {
         let final_wav_path: PathBuf = base_path
             .join("SMPL")
