@@ -11,7 +11,6 @@ use std::{
 
 use crate::{types::PatchData, utils::ByteUtils};
 
-
 fn main() {
     let disc_dir: &Path = Path::new("V:\\24297D08");
     let index_path: PathBuf = disc_dir.join("0000");
