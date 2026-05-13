@@ -12,7 +12,7 @@ use std::{
 use crate::{types::PatchData, utils::ByteUtils};
 
 fn main() {
-    let disc_dir: &Path = Path::new("V:\\24297D08");
+    let disc_dir: &Path = Path::new("X:\\Audio\\Jono Sample CD\\24297D08");
     let index_path: PathBuf = disc_dir.join("0000");
 
     let index_file: Vec<u8> = fs::read(index_path).expect("Failed to read index_file");
@@ -22,7 +22,7 @@ fn main() {
         .map(PatchData::from_data)
         .collect();
 
-    println!("{:?}", patch_data);
+    println!("{patch_data:?}");
 
     // The patch_data contains patch_data, but also includes the disc_metadata inside its file as the last entry.
     // Sometimes the name on that patch isn't set so we actually grab it from its own file. Which can't be dynamically discovered.
